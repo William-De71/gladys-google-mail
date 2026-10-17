@@ -1,0 +1,135 @@
+# Google Mail
+
+## Presentación
+
+Esta integración conecta una cuenta de **Gmail** con Gladys mediante la **API oficial de Gmail** y OAuth 2.0: sin contraseña de aplicación, y cada permiso se elige y se puede revocar.
+
+- **Notificaciones por correo**: cada usuario introduce en «Mi cuenta» la dirección que recibirá sus notificaciones de Gladys; se envían desde la cuenta de Gmail conectada (con la imagen de la cámara cuando la notificación la incluye).
+- **Respuesta automática**: activarla o desactivarla desde una escena (asunto, mensaje, fechas opcionales, solo contactos) o desde un widget.
+- **Activador «correo nuevo recibido»**, filtrable por dirección del remitente, etiqueta de Gmail y categoría (Principal, Promociones…), con el remitente, el asunto, el extracto y las etiquetas como variables.
+- **Acciones de escena**: enviar un correo (destinatarios, Cc, Cco, texto o HTML sencillo), leer los correos sin leer, marcar como leído, añadir una etiqueta, archivar.
+- **Widgets**: los correos sin leer de la bandeja de entrada o de una etiqueta, y el estado de la respuesta automática con sus botones.
+- **Nube**: los datos circulan entre los servidores de Google y tu Gladys, con tu propio cliente de Google; nada pasa por un servidor de terceros.
+
+**En qué se diferencia de las integraciones SMTP e IMAP de la tienda**: «SMTP» envía las notificaciones por cualquier servidor de correo (con una contraseña de aplicación para Gmail), sin activador, widget ni respuesta automática; «IMAP Mail» lee hasta tres buzones con una contraseña de aplicación. Google Mail solo sirve para Gmail, pero sin contraseña de aplicación, con permisos limitados a lo necesario (el cuerpo de los correos nunca se lee), la respuesta automática, las etiquetas y categorías de Gmail, y el envío, la lectura y la organización en una sola integración.
+
+![El widget de correos sin leer y el de la respuesta automática con su formulario Activar abierto (ilustración generada, no una captura de pantalla)](https://raw.githubusercontent.com/William-De71/gladys-google-mail/main/docs/assets/widgets.es.png)
+
+## Requisitos
+
+- Gladys **5.2.0** o posterior (formularios de los widgets).
+- Una cuenta de Gmail (personal, o de Google Workspace si el administrador permite aplicaciones de terceros).
+- Un **proyecto de Google Cloud** gratuito en el que creas **tu propio cliente OAuth**: Google no permite compartir una clave y la integración no incluye ninguna. Unos diez minutos, una sola vez.
+
+## Configuración
+
+### 1. Proyecto de Google Cloud y API
+
+1. Abre la [consola de Google Cloud](https://console.cloud.google.com/) y crea un proyecto (por ejemplo «Gladys»).
+2. En **API y servicios → Biblioteca**, busca **Gmail API** y pulsa **Habilitar** ([enlace directo](https://console.cloud.google.com/apis/library/gmail.googleapis.com)).
+
+### 2. Pantalla de consentimiento (Google Auth Platform)
+
+1. Abre **Google Auth Platform** ([enlace](https://console.cloud.google.com/auth/overview)) y pulsa **Comenzar**: nombre de la aplicación («Gladys»), correo de asistencia, público **Externo**, dirección de contacto, acepta las condiciones y pulsa **Crear**.
+2. En **Público**, pulsa **Publicar aplicación** para pasarla **En producción**. Es imprescindible: una aplicación que se queda **En prueba** recibe permisos que **caducan a los 7 días**, y solo pueden conectarse los usuarios de prueba.
+3. No pidas la verificación de Google: la aplicación queda «no verificada», lo que basta para un uso personal (100 usuarios como máximo). Google mostrará un aviso al conectar (paso 4). Los permisos de lectura de Gmail se consideran **restringidos**: para una aplicación pública Google exigiría una evaluación de seguridad; para tu propia aplicación no verificada solo muestra un aviso más fuerte.
+
+### 3. Cliente OAuth
+
+1. En **Google Auth Platform → Clientes**, pulsa **Crear cliente**.
+2. Tipo de aplicación: **Aplicación web**, nombre: «Gladys».
+3. En **URI de redireccionamiento autorizados**, añade exactamente:
+
+   ```
+   https://my.gladysassistant.com/redirect/oauth
+   ```
+
+   Es la página HTTPS de Gladys que devuelve tu navegador a tu instancia, sea cual sea su dirección (Google rechaza las direcciones `http://` y las direcciones IP). Si accedes a Gladys por HTTPS y activas la opción avanzada «dirección de la instancia» de la pantalla de configuración, declara en su lugar la dirección que muestra.
+
+4. Pulsa **Crear** y copia el **ID de cliente** y el **Secreto del cliente** (empieza por `GOCSPX-`).
+
+### 4. En Gladys
+
+1. Abre la integración **Google Mail**, pega el **Client ID** y el **Client secret**, elige **Qué puede hacer Gladys** y **guarda**.
+2. Pulsa **Conectar con Google** y elige tu cuenta.
+3. Google avisa de que **no ha verificado esta aplicación**: es la tuya. Pulsa **Configuración avanzada** y luego **Ir a Gladys (no seguro)**.
+4. **Marca todos los permisos de Gmail** propuestos y pulsa **Continuar**. Vuelves a Gladys, conectado.
+5. Cada usuario que quiera recibir sus notificaciones por correo introduce su dirección en el bloque **Mi cuenta** de la página de la integración.
+
+| Campo                                | Por defecto | Función                                                                                    |
+| ------------------------------------ | ----------- | ------------------------------------------------------------------------------------------ |
+| Client ID                            | —           | El Client ID de tu cliente OAuth (termina en `.apps.googleusercontent.com`).               |
+| Client secret                        | —           | Su secreto (`GOCSPX-…`), nunca mostrado ni escrito en los registros.                       |
+| Qué puede hacer Gladys               | Lectura     | El nivel de acceso (tabla siguiente). Vuelve a conectarte tras un cambio.                  |
+| Conectar con Google                  | —           | El botón de conexión.                                                                      |
+| Buscar correos nuevos cada (minutos) | 2           | De 1 a 60. Cada comprobación cuesta 3 unidades de cuota de Gmail, más 20 por correo nuevo. |
+| Asunto de las notificaciones         | Gladys      | El asunto de los correos enviados como notificaciones.                                     |
+| Mi cuenta → Dirección de correo      | —           | Para cada usuario: la dirección que recibe sus notificaciones (vacía: no se envía nada).   |
+
+### Niveles de acceso y permisos
+
+La integración solo pide los permisos del nivel elegido, los más estrictos que ofrece Gmail:
+
+| Nivel                                  | Permisos de Google                                                 | Qué funciona                                                                       |
+| -------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Solo envío y respuesta automática      | `gmail.send`, `gmail.settings.basic`                               | Notificaciones, acción «enviar un correo», respuesta automática (escenas y widget) |
+| + leer remitentes, asuntos y etiquetas | los mismos + `gmail.metadata` (restringido)                        | + activador «correo nuevo», correos sin leer (acción y widget), sin extracto       |
+| + leer y organizar                     | `gmail.send`, `gmail.settings.basic`, `gmail.modify` (restringido) | + extracto de los correos, marcar como leído, añadir etiqueta, archivar            |
+
+`gmail.metadata` solo da acceso a los encabezados y a las etiquetas, nunca al cuerpo de los correos. `gmail.modify` permite leer los correos y cambiar sus etiquetas; la integración solo lo usa para el extracto (`snippet`) y las etiquetas, y nunca borra nada. Los tokens y el cursor de lectura se guardan en `/data` (el volumen de la integración), nunca en los registros.
+
+## Uso
+
+### Notificaciones por correo
+
+La integración es un canal de comunicación «solo envío»: cuando Gladys envía un mensaje a un usuario (acción de escena «Enviar un mensaje», alertas…), sale por correo a la dirección introducida en **Mi cuenta**, con el asunto configurado. Una imagen adjunta a la notificación (instantánea de cámara) se añade como archivo adjunto. Gladys no lee las respuestas: responder al correo no controla la casa.
+
+### Widgets
+
+- **Correos sin leer**: el número de correos sin leer de la bandeja de entrada (o de la etiqueta elegida en los ajustes del widget, por su nombre), los cinco más recientes (remitente, asunto, fecha, extracto, enlace a Gmail), los botones **Marcar como leídos** (nivel «leer y organizar»), **Actualizar** y **Abrir Gmail**.
+- **Respuesta automática**: estado (activada, programada, terminada, desactivada), asunto, fechas, destinatarios, con **Activar** (formulario: asunto, mensaje, duración en días, solo contactos) y **Desactivar**.
+
+### Activador de escena
+
+**Gmail: correo nuevo recibido** se activa con cada correo que llega a la bandeja de entrada o a una etiqueta (un filtro de Gmail puede saltarse la bandeja de entrada), comprobado cada 2 minutos por defecto. Los borradores, los correos enviados, el spam, la papelera y los correos enviados por el propio Gladys nunca lo activan.
+
+- Filtros: **dirección del remitente** (exacta, en minúsculas), **etiqueta de Gmail** (el nombre exacto de la primera etiqueta del correo, o `INBOX` para un correo sin etiqueta), **categoría** (Principal, Social, Promociones, Notificaciones, Foros).
+- Variables: nombre y dirección del remitente, remitente completo, destinatarios, asunto, extracto (nivel «leer y organizar»), etiqueta, todas las etiquetas, categoría, importante, fecha de recepción, ID del correo y de la conversación, correos sin leer de la bandeja.
+
+### Acciones de escena
+
+- **Enviar un correo**: destinatarios (separados por comas), Cc, Cco, asunto, mensaje, texto o HTML sencillo. Salidas: ID del correo y de la conversación.
+- **Activar la respuesta automática**: asunto, mensaje, inicio y fin opcionales (`AAAA-MM-DD`, `DD/MM/AAAA`, con una hora `HH:MM` opcional, o `+3` para dentro de 3 días; zona horaria de Gladys; un fin sin hora termina a las 23:59), solo contactos. Salidas: inicio y fin (ISO 8601).
+- **Desactivar la respuesta automática**: se conservan el asunto y el mensaje.
+- **Leer los correos sin leer**: de la bandeja de entrada o de una etiqueta. Salidas: número, remitente, asunto e ID del más reciente.
+- **Marcar leído, etiquetar, archivar**: sobre el ID de un correo (la variable del activador), marcar como leído, añadir una etiqueta existente, quitar de la bandeja de entrada.
+
+Estas acciones nunca activan el activador «correo nuevo», ni siquiera un correo enviado a tu propia dirección.
+
+### Ejemplos de escenas
+
+- Cuando llega un correo de `facturas@proveedor.es` → enviar una notificación «Nueva factura: {{asunto}}» y añadir la etiqueta «Facturas».
+- Cuando el modo de la casa pasa a «Vacaciones» → activar la respuesta automática hasta `+14`; a la vuelta → desactivarla.
+- Cuando salta la alarma → enviar un correo a toda la familia, con un mensaje en HTML sencillo.
+
+## Solución de problemas
+
+- **«Error 400: redirect_uri_mismatch»**: el URI de redireccionamiento del cliente OAuth no es el de Gladys. Comprueba `https://my.gladysassistant.com/redirect/oauth`, sin barra final, en **URI de redireccionamiento autorizados** de un cliente **Aplicación web**.
+- **«Error 403: access_denied»**: la aplicación sigue **En prueba** y tu cuenta no es usuario de prueba. Publícala (**Público → Publicar aplicación**).
+- **«Google no ha verificado esta aplicación»**: normal, es tu propia aplicación; **Configuración avanzada → Ir a Gladys (no seguro)**.
+- **«Google no concedió todos los permisos»**: faltaba una casilla en la pantalla de consentimiento, o el nivel de acceso cambió desde la conexión. Vuelve a conectarte y márcalo todo.
+- **«Google revocó el acceso» cada semana**: la aplicación se quedó **En prueba** (7 días). Publícala y vuelve a conectarte.
+- **«La API de Gmail no está activada»**: habilita **Gmail API** en el proyecto del cliente OAuth, espera unos minutos y pulsa **Probar la conexión**.
+- **Cuenta de Google Workspace**: el administrador puede bloquear las aplicaciones no verificadas o los permisos restringidos; pídele que autorice tu cliente OAuth.
+- **Un correo nuevo tarda unos minutos en lanzar su escena**: es el intervalo de comprobación (2 minutos por defecto).
+- **Para un informe de error**: pulsa **Diagnóstico** (resumen anonimizado en los registros, sin tokens, direcciones ni contenido de correos) y adjunta los registros de la integración, la versión de Gladys y la de la integración.
+
+## Limitaciones
+
+- **Nunca probada con una cuenta de Google real**: el código sigue la documentación de la API de Gmail y pruebas contra un Google simulado; tus comentarios son bienvenidos.
+- Sin notificaciones push de Gmail (pasan por Google Cloud Pub/Sub, fuera del alcance de un servidor doméstico): un correo nuevo se detecta como muy tarde tras el intervalo de comprobación. Si la integración se detiene más de una semana aproximadamente, Gmail puede rechazar el cursor antiguo: los correos recibidos mientras tanto no activan nada.
+- Como máximo 20 correos nuevos leídos por comprobación: por encima (una importación masiva), los más antiguos no activan nada.
+- El filtro «etiqueta» compara la primera etiqueta del correo; para un correo con varias, usa la variable «todas las etiquetas» en una condición.
+- El cuerpo de los correos nunca se lee; sin adjuntos al enviar desde una escena (solo se adjunta la imagen de una notificación); sin borradores ni eliminación.
+- Gladys no recibe mensajes por correo (canal solo envío): un correo no puede controlar la casa, salvo con tus propias escenas sobre el activador.
+- Una cuenta de Google por integración.

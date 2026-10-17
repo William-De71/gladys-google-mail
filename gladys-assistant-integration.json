@@ -1,0 +1,1063 @@
+{
+  "manifest_version": 1,
+  "type": "communication",
+  "name": "Google Mail",
+  "description": {
+    "en": "Gmail in Gladys: notifications by email, vacation responder, new mail scenes, widgets.",
+    "fr": "Gmail dans Gladys : notifications par e-mail, réponse d’absence, scènes, widgets.",
+    "de": "Gmail in Gladys: Benachrichtigungen per E-Mail, Abwesenheitsnotiz, Szenen, Widgets.",
+    "es": "Gmail en Gladys: notificaciones por correo, respuesta automática, escenas, widgets."
+  },
+  "version": "0.1.0",
+  "docker_image": "ghcr.io/william-de71/gladys-google-mail:0.1.0",
+  "gladys_version": ">=5.2.0",
+  "categories": ["notifications", "services"],
+  "cover_image": "https://raw.githubusercontent.com/William-De71/gladys-google-mail/main/cover.jpg",
+  "transports": ["cloud"],
+  "messaging": {
+    "receive": false
+  },
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "1. Your Google Cloud OAuth client",
+        "fr": "1. Votre client OAuth Google Cloud",
+        "de": "1. Dein Google-Cloud-OAuth-Client",
+        "es": "1. Tu cliente OAuth de Google Cloud"
+      },
+      "description": {
+        "en": "Google gives no shared key: create a free project in the Google Cloud console, enable the Gmail API, configure the consent screen (External) and publish it \"In production\" (otherwise the access expires after 7 days), then create an OAuth client of type \"Web application\" whose authorized redirect URI is exactly https://my.gladysassistant.com/redirect/oauth. The documentation details every step.",
+        "fr": "Google ne fournit pas de clé partagée : créez un projet gratuit dans la console Google Cloud, activez l’API Gmail, configurez l’écran de consentement (Externe) et publiez-le « En production » (sinon l’accès expire au bout de 7 jours), puis créez un client OAuth de type « Application Web » dont l’URI de redirection autorisée est exactement https://my.gladysassistant.com/redirect/oauth. La documentation détaille chaque étape.",
+        "de": "Google stellt keinen gemeinsamen Schlüssel bereit: Lege in der Google-Cloud-Konsole ein kostenloses Projekt an, aktiviere die Gmail API, richte den Zustimmungsbildschirm (Extern) ein und veröffentliche ihn „In Produktion“ (sonst läuft der Zugriff nach 7 Tagen ab). Erstelle dann einen OAuth-Client vom Typ „Webanwendung“ mit genau dieser autorisierten Weiterleitungs-URI: https://my.gladysassistant.com/redirect/oauth. Die Dokumentation beschreibt jeden Schritt.",
+        "es": "Google no ofrece una clave compartida: crea un proyecto gratuito en la consola de Google Cloud, activa la API de Gmail, configura la pantalla de consentimiento (Externo) y publícala «En producción» (si no, el acceso caduca a los 7 días), y crea un cliente OAuth de tipo «Aplicación web» cuyo URI de redireccionamiento autorizado sea exactamente https://my.gladysassistant.com/redirect/oauth. La documentación detalla cada paso."
+      },
+      "links": [
+        {
+          "url": "https://console.cloud.google.com/apis/library/gmail.googleapis.com",
+          "label": {
+            "en": "Enable the Gmail API",
+            "fr": "Activer l’API Gmail",
+            "de": "Gmail API aktivieren",
+            "es": "Activar la API de Gmail"
+          }
+        },
+        {
+          "url": "https://console.cloud.google.com/auth/clients",
+          "label": {
+            "en": "OAuth clients",
+            "fr": "Clients OAuth",
+            "de": "OAuth-Clients",
+            "es": "Clientes OAuth"
+          }
+        },
+        {
+          "url": "https://github.com/William-De71/gladys-google-mail/blob/main/docs/en.md",
+          "label": {
+            "en": "Step-by-step guide",
+            "fr": "Guide pas à pas",
+            "de": "Schritt-für-Schritt-Anleitung",
+            "es": "Guía paso a paso"
+          }
+        }
+      ]
+    },
+    {
+      "key": "client_id",
+      "type": "string",
+      "label": {
+        "en": "Client ID",
+        "fr": "Client ID",
+        "de": "Client-ID",
+        "es": "Client ID"
+      },
+      "description": {
+        "en": "Ends with .apps.googleusercontent.com.",
+        "fr": "Se termine par .apps.googleusercontent.com.",
+        "de": "Endet auf .apps.googleusercontent.com.",
+        "es": "Termina en .apps.googleusercontent.com."
+      },
+      "placeholder": {
+        "en": "123456789012-abc.apps.googleusercontent.com",
+        "fr": "123456789012-abc.apps.googleusercontent.com",
+        "de": "123456789012-abc.apps.googleusercontent.com",
+        "es": "123456789012-abc.apps.googleusercontent.com"
+      },
+      "required": true
+    },
+    {
+      "key": "client_secret",
+      "type": "secret",
+      "label": {
+        "en": "Client secret",
+        "fr": "Client secret",
+        "de": "Clientschlüssel",
+        "es": "Client secret"
+      },
+      "description": {
+        "en": "Shown by Google when the client is created (it starts with GOCSPX-).",
+        "fr": "Affiché par Google à la création du client (il commence par GOCSPX-).",
+        "de": "Wird von Google beim Erstellen des Clients angezeigt (beginnt mit GOCSPX-).",
+        "es": "Google lo muestra al crear el cliente (empieza por GOCSPX-)."
+      },
+      "required": true
+    },
+    {
+      "key": "access",
+      "type": "select",
+      "label": {
+        "en": "What Gladys may do",
+        "fr": "Ce que Gladys peut faire",
+        "de": "Was Gladys darf",
+        "es": "Qué puede hacer Gladys"
+      },
+      "description": {
+        "en": "Decides the permissions asked at \"Connect\": connect again after a change. Reading the mailbox (scene trigger, unread mails) needs a \"restricted\" Gmail permission: Google shows a stronger warning for your own unverified app.",
+        "fr": "Détermine les autorisations demandées à la connexion : reconnectez-vous après un changement. Lire la boîte (déclencheur, mails non lus) demande une autorisation Gmail « restreinte » : Google affiche un avertissement plus marqué pour votre propre application non validée.",
+        "de": "Bestimmt die beim Verbinden angefragten Berechtigungen: Nach einer Änderung neu verbinden. Das Lesen des Postfachs (Auslöser, ungelesene E-Mails) erfordert eine „eingeschränkte“ Gmail-Berechtigung: Google zeigt für deine eigene, nicht überprüfte App eine deutlichere Warnung.",
+        "es": "Define los permisos pedidos al conectar: vuelve a conectarte tras un cambio. Leer el buzón (activador, correos sin leer) requiere un permiso de Gmail «restringido»: Google muestra un aviso más fuerte para tu propia app no verificada."
+      },
+      "options": [
+        {
+          "value": "send",
+          "label": {
+            "en": "Send and vacation responder only",
+            "fr": "Envoi et réponse d’absence seulement",
+            "de": "Nur Senden und Abwesenheitsnotiz",
+            "es": "Solo envío y respuesta automática"
+          }
+        },
+        {
+          "value": "metadata",
+          "label": {
+            "en": "+ read senders, subjects and labels",
+            "fr": "+ lire expéditeurs, objets et libellés",
+            "de": "+ Absender, Betreffe und Labels lesen",
+            "es": "+ leer remitentes, asuntos y etiquetas"
+          }
+        },
+        {
+          "value": "modify",
+          "label": {
+            "en": "+ read and organize (snippet, mark as read)",
+            "fr": "+ lire et organiser (extrait, marquer lu)",
+            "de": "+ lesen und organisieren (Auszug, gelesen)",
+            "es": "+ leer y organizar (extracto, marcar leído)"
+          }
+        }
+      ],
+      "default": "metadata",
+      "required": false
+    },
+    {
+      "key": "connect_intro",
+      "type": "section",
+      "label": {
+        "en": "2. Connect your Google account",
+        "fr": "2. Connectez votre compte Google",
+        "de": "2. Verbinde dein Google-Konto",
+        "es": "2. Conecta tu cuenta de Google"
+      },
+      "description": {
+        "en": "Save first, then click the button. Google warns that it \"hasn’t verified this app\": it is your own app, click Advanced, then Go to (unsafe), and tick every Gmail permission. Connect again whenever Gladys reports a revoked access.",
+        "fr": "Enregistrez d’abord, puis cliquez sur le bouton. Google prévient qu’il « n’a pas validé cette application » : c’est votre propre application, cliquez sur Paramètres avancés puis Accéder à… (non sécurisé), et cochez toutes les autorisations Gmail. Reconnectez-vous si Gladys signale un accès révoqué.",
+        "de": "Zuerst speichern, dann auf die Schaltfläche klicken. Google warnt, dass es „diese App nicht überprüft hat“: Es ist deine eigene App. Klicke auf Erweitert, dann auf „Weiter zu … (unsicher)“ und setze bei allen Gmail-Berechtigungen ein Häkchen. Verbinde dich erneut, wenn Gladys einen widerrufenen Zugriff meldet.",
+        "es": "Guarda primero y pulsa el botón. Google avisa de que «no ha verificado esta aplicación»: es tu propia aplicación, pulsa Configuración avanzada y luego Ir a… (no seguro), y marca todos los permisos de Gmail. Vuelve a conectarte si Gladys indica un acceso revocado."
+      }
+    },
+    {
+      "key": "google_account",
+      "type": "oauth2",
+      "label": {
+        "en": "Connect with Google",
+        "fr": "Se connecter avec Google",
+        "de": "Mit Google verbinden",
+        "es": "Conectar con Google"
+      },
+      "description": {
+        "en": "Gladys never reads the body of your mails and never deletes anything.",
+        "fr": "Gladys ne lit jamais le corps de vos mails et ne supprime jamais rien.",
+        "de": "Gladys liest nie den Inhalt deiner E-Mails und löscht nie etwas.",
+        "es": "Gladys nunca lee el cuerpo de tus correos y nunca borra nada."
+      }
+    },
+    {
+      "key": "options_intro",
+      "type": "section",
+      "label": {
+        "en": "3. Options",
+        "fr": "3. Options",
+        "de": "3. Optionen",
+        "es": "3. Opciones"
+      },
+      "description": {
+        "en": "Each user enters the address that receives their Gladys notifications in the \"My account\" block below. With a reading access, the integration reads the mailbox history on a timer (Gmail pushes nothing to a home server).",
+        "fr": "Chaque utilisateur saisit l’adresse qui recevra ses notifications Gladys dans le bloc « Mon compte » ci-dessous. Avec un accès en lecture, l’intégration relit l’historique de la boîte à intervalle régulier (Gmail ne pousse rien vers un serveur domestique).",
+        "de": "Jeder Benutzer gibt im Block „Mein Konto“ unten die Adresse ein, die seine Gladys-Benachrichtigungen erhält. Mit Lesezugriff liest die Integration den Verlauf des Postfachs in regelmäßigen Abständen (Gmail sendet nichts an einen Heimserver).",
+        "es": "Cada usuario introduce la dirección que recibirá sus notificaciones de Gladys en el bloque «Mi cuenta» de abajo. Con acceso de lectura, la integración lee el historial del buzón a intervalos regulares (Gmail no envía nada a un servidor doméstico)."
+      }
+    },
+    {
+      "key": "poll_minutes",
+      "type": "number",
+      "label": {
+        "en": "Look for new mails every (minutes)",
+        "fr": "Chercher les nouveaux mails toutes les (minutes)",
+        "de": "Neue E-Mails suchen alle (Minuten)",
+        "es": "Buscar correos nuevos cada (minutos)"
+      },
+      "description": {
+        "en": "Each check costs 3 Gmail quota units, plus 20 per new mail: far below the limits of a personal project.",
+        "fr": "Chaque vérification coûte 3 unités de quota Gmail, plus 20 par nouveau mail : très en dessous des limites d’un projet personnel.",
+        "de": "Jede Prüfung kostet 3 Gmail-Kontingenteinheiten plus 20 pro neuer E-Mail: weit unter den Grenzen eines privaten Projekts.",
+        "es": "Cada comprobación cuesta 3 unidades de cuota de Gmail, más 20 por correo nuevo: muy por debajo de los límites de un proyecto personal."
+      },
+      "min": 1,
+      "max": 60,
+      "default": 2,
+      "required": false
+    },
+    {
+      "key": "notification_subject",
+      "type": "string",
+      "label": {
+        "en": "Subject of the notifications",
+        "fr": "Objet des notifications",
+        "de": "Betreff der Benachrichtigungen",
+        "es": "Asunto de las notificaciones"
+      },
+      "description": {
+        "en": "The subject of the mails Gladys sends as notifications.",
+        "fr": "L’objet des mails que Gladys envoie comme notifications.",
+        "de": "Der Betreff der E-Mails, die Gladys als Benachrichtigungen sendet.",
+        "es": "El asunto de los correos que Gladys envía como notificaciones."
+      },
+      "placeholder": {
+        "en": "Gladys",
+        "fr": "Gladys",
+        "de": "Gladys",
+        "es": "Gladys"
+      },
+      "default": "Gladys",
+      "required": false
+    }
+  ],
+  "contact_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Notifications by email",
+        "fr": "Notifications par e-mail",
+        "de": "Benachrichtigungen per E-Mail",
+        "es": "Notificaciones por correo"
+      },
+      "description": {
+        "en": "Enter the address your Gladys notifications go to. They are sent from the Gmail account connected by the administrator.",
+        "fr": "Saisissez l’adresse qui recevra vos notifications Gladys. Elles partent du compte Gmail connecté par l’administrateur.",
+        "de": "Gib die Adresse ein, an die deine Gladys-Benachrichtigungen gehen. Sie werden vom Gmail-Konto gesendet, das der Administrator verbunden hat.",
+        "es": "Introduce la dirección que recibirá tus notificaciones de Gladys. Se envían desde la cuenta de Gmail conectada por el administrador."
+      }
+    },
+    {
+      "key": "email",
+      "type": "string",
+      "label": {
+        "en": "Email address",
+        "fr": "Adresse e-mail",
+        "de": "E-Mail-Adresse",
+        "es": "Dirección de correo"
+      },
+      "placeholder": {
+        "en": "you@example.com",
+        "fr": "vous@exemple.fr",
+        "de": "du@beispiel.de",
+        "es": "tu@ejemplo.es"
+      },
+      "required": true
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "description": {
+        "en": "Reads Gmail now and shows the account, the granted permissions and the quota used today.",
+        "fr": "Lit Gmail maintenant et affiche le compte, les autorisations accordées et le quota utilisé aujourd’hui.",
+        "de": "Liest Gmail jetzt und zeigt Konto, erteilte Berechtigungen und das heute genutzte Kontingent.",
+        "es": "Lee Gmail ahora y muestra la cuenta, los permisos concedidos y la cuota usada hoy."
+      },
+      "timeout_seconds": 60
+    },
+    {
+      "key": "diagnostic",
+      "label": {
+        "en": "Diagnostic",
+        "fr": "Diagnostic",
+        "de": "Diagnose",
+        "es": "Diagnóstico"
+      },
+      "description": {
+        "en": "Writes an anonymized summary to the logs of the integration, to attach to a bug report.",
+        "fr": "Écrit un résumé anonymisé dans les journaux de l’intégration, à joindre à un rapport de bug.",
+        "de": "Schreibt eine anonymisierte Zusammenfassung in die Protokolle der Integration, für einen Fehlerbericht.",
+        "es": "Escribe un resumen anonimizado en los registros de la integración, para adjuntar a un informe de error."
+      },
+      "timeout_seconds": 15
+    },
+    {
+      "key": "disconnect",
+      "label": {
+        "en": "Disconnect from Google",
+        "fr": "Se déconnecter de Google",
+        "de": "Von Google trennen",
+        "es": "Desconectar de Google"
+      },
+      "description": {
+        "en": "Revokes the access of Gladys and deletes the tokens. Your scenes and widgets are kept.",
+        "fr": "Révoque l’accès de Gladys et supprime les jetons. Vos scènes et widgets sont conservés.",
+        "de": "Widerruft den Zugriff von Gladys und löscht die Token. Szenen und Widgets bleiben erhalten.",
+        "es": "Revoca el acceso de Gladys y borra los tokens. Tus escenas y widgets se conservan."
+      },
+      "timeout_seconds": 30
+    }
+  ],
+  "widgets": [
+    {
+      "key": "unread",
+      "label": {
+        "en": "Unread mails",
+        "fr": "Mails non lus",
+        "de": "Ungelesene E-Mails",
+        "es": "Correos sin leer"
+      },
+      "description": {
+        "en": "The unread mails of the inbox or of a label: count, newest mails, mark as read.",
+        "fr": "Mails non lus de la boîte de réception ou d’un libellé : nombre, derniers mails, marquer lus.",
+        "de": "Ungelesene E-Mails im Posteingang oder einem Label: Anzahl, neueste, als gelesen markieren.",
+        "es": "Correos sin leer de la bandeja o de una etiqueta: número, últimos correos, marcar como leídos."
+      },
+      "icon": "mail",
+      "action_timeout_seconds": 30,
+      "settings": [
+        {
+          "key": "label",
+          "type": "string",
+          "label": {
+            "en": "Gmail label",
+            "fr": "Libellé Gmail",
+            "de": "Gmail-Label",
+            "es": "Etiqueta de Gmail"
+          },
+          "description": {
+            "en": "Its name as shown in Gmail. Leave empty for the inbox.",
+            "fr": "Son nom tel qu’affiché dans Gmail. Laissez vide pour la boîte de réception.",
+            "de": "Sein Name wie in Gmail. Leer lassen für den Posteingang.",
+            "es": "Su nombre tal como aparece en Gmail. Déjalo vacío para la bandeja de entrada."
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "vacation",
+      "label": {
+        "en": "Vacation responder",
+        "fr": "Réponse d’absence",
+        "de": "Abwesenheitsnotiz",
+        "es": "Respuesta automática"
+      },
+      "description": {
+        "en": "The state of the Gmail vacation responder, with buttons to turn it on and off.",
+        "fr": "L’état de la réponse automatique d’absence Gmail, avec des boutons pour l’activer et la désactiver.",
+        "de": "Der Status der Gmail-Abwesenheitsnotiz, mit Schaltflächen zum Ein- und Ausschalten.",
+        "es": "El estado de la respuesta automática de Gmail, con botones para activarla y desactivarla."
+      },
+      "icon": "sun",
+      "action_timeout_seconds": 30
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "new_email",
+      "label": {
+        "en": "Gmail: new mail received",
+        "fr": "Gmail : nouveau mail reçu",
+        "de": "Gmail: neue E-Mail empfangen",
+        "es": "Gmail: correo nuevo recibido"
+      },
+      "description": {
+        "en": "A mail reached the inbox or a label (checked every few minutes). Needs a reading access.",
+        "fr": "Un mail est arrivé dans la boîte de réception ou un libellé (vérifié toutes les quelques minutes). Demande un accès en lecture.",
+        "de": "Eine E-Mail kam im Posteingang oder in einem Label an (alle paar Minuten geprüft). Erfordert Lesezugriff.",
+        "es": "Llegó un correo a la bandeja de entrada o a una etiqueta (comprobado cada pocos minutos). Requiere acceso de lectura."
+      },
+      "fields": [
+        {
+          "key": "from_address",
+          "type": "string",
+          "label": {
+            "en": "Sender address",
+            "fr": "Adresse de l’expéditeur",
+            "de": "Absenderadresse",
+            "es": "Dirección del remitente"
+          },
+          "description": {
+            "en": "The exact address, in lower case. Leave empty for any sender.",
+            "fr": "L’adresse exacte, en minuscules. Laissez vide pour tout expéditeur.",
+            "de": "Die genaue Adresse, kleingeschrieben. Leer lassen für jeden Absender.",
+            "es": "La dirección exacta, en minúsculas. Déjalo vacío para cualquier remitente."
+          },
+          "required": false
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "label": {
+            "en": "Gmail label",
+            "fr": "Libellé Gmail",
+            "de": "Gmail-Label",
+            "es": "Etiqueta de Gmail"
+          },
+          "description": {
+            "en": "Its exact name as shown in Gmail (the first label of the mail), or INBOX for a mail without label. Leave empty for any.",
+            "fr": "Son nom exact tel qu’affiché dans Gmail (le premier libellé du mail), ou INBOX pour un mail sans libellé. Laissez vide pour tous.",
+            "de": "Sein genauer Name wie in Gmail (das erste Label der E-Mail) oder INBOX für eine E-Mail ohne Label. Leer lassen für alle.",
+            "es": "Su nombre exacto tal como aparece en Gmail (la primera etiqueta del correo), o INBOX para un correo sin etiqueta. Déjalo vacío para todos."
+          },
+          "required": false
+        },
+        {
+          "key": "category",
+          "type": "multi_select",
+          "label": {
+            "en": "Inbox category",
+            "fr": "Catégorie de la boîte",
+            "de": "Posteingang-Kategorie",
+            "es": "Categoría de la bandeja"
+          },
+          "description": {
+            "en": "Leave empty for every category.",
+            "fr": "Laissez vide pour toutes les catégories.",
+            "de": "Leer lassen für alle Kategorien.",
+            "es": "Déjalo vacío para todas las categorías."
+          },
+          "options": [
+            {
+              "value": "primary",
+              "label": {
+                "en": "Primary",
+                "fr": "Principale",
+                "de": "Allgemein",
+                "es": "Principal"
+              }
+            },
+            {
+              "value": "social",
+              "label": {
+                "en": "Social",
+                "fr": "Réseaux sociaux",
+                "de": "Soziale Netzwerke",
+                "es": "Social"
+              }
+            },
+            {
+              "value": "promotions",
+              "label": {
+                "en": "Promotions",
+                "fr": "Promotions",
+                "de": "Werbung",
+                "es": "Promociones"
+              }
+            },
+            {
+              "value": "updates",
+              "label": {
+                "en": "Updates",
+                "fr": "Notifications",
+                "de": "Benachrichtigungen",
+                "es": "Notificaciones"
+              }
+            },
+            {
+              "value": "forums",
+              "label": {
+                "en": "Forums",
+                "fr": "Forums",
+                "de": "Foren",
+                "es": "Foros"
+              }
+            }
+          ],
+          "required": false
+        }
+      ],
+      "variables": [
+        {
+          "key": "from_name",
+          "type": "string",
+          "label": {
+            "en": "Sender name",
+            "fr": "Nom de l’expéditeur",
+            "de": "Name des Absenders",
+            "es": "Nombre del remitente"
+          }
+        },
+        {
+          "key": "from_address",
+          "type": "string",
+          "label": {
+            "en": "Sender address",
+            "fr": "Adresse de l’expéditeur",
+            "de": "Absenderadresse",
+            "es": "Dirección del remitente"
+          }
+        },
+        {
+          "key": "from",
+          "type": "string",
+          "label": {
+            "en": "From (full)",
+            "fr": "De (complet)",
+            "de": "Von (vollständig)",
+            "es": "De (completo)"
+          }
+        },
+        {
+          "key": "to",
+          "type": "string",
+          "label": {
+            "en": "To",
+            "fr": "À",
+            "de": "An",
+            "es": "Para"
+          }
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Objet",
+            "de": "Betreff",
+            "es": "Asunto"
+          }
+        },
+        {
+          "key": "snippet",
+          "type": "string",
+          "label": {
+            "en": "Snippet (\"Read and organize\" only)",
+            "fr": "Extrait (« Lire et organiser » seulement)",
+            "de": "Auszug (nur „Lesen und organisieren“)",
+            "es": "Extracto (solo «Leer y organizar»)"
+          }
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "label": {
+            "en": "Label",
+            "fr": "Libellé",
+            "de": "Label",
+            "es": "Etiqueta"
+          }
+        },
+        {
+          "key": "labels",
+          "type": "string",
+          "label": {
+            "en": "Every label",
+            "fr": "Tous les libellés",
+            "de": "Alle Labels",
+            "es": "Todas las etiquetas"
+          }
+        },
+        {
+          "key": "category",
+          "type": "string",
+          "label": {
+            "en": "Category",
+            "fr": "Catégorie",
+            "de": "Kategorie",
+            "es": "Categoría"
+          }
+        },
+        {
+          "key": "important",
+          "type": "boolean",
+          "label": {
+            "en": "Marked important",
+            "fr": "Marqué important",
+            "de": "Als wichtig markiert",
+            "es": "Marcado como importante"
+          }
+        },
+        {
+          "key": "date",
+          "type": "string",
+          "label": {
+            "en": "Received at (ISO 8601)",
+            "fr": "Reçu le (ISO 8601)",
+            "de": "Empfangen am (ISO 8601)",
+            "es": "Recibido el (ISO 8601)"
+          }
+        },
+        {
+          "key": "message_id",
+          "type": "string",
+          "label": {
+            "en": "Message ID",
+            "fr": "Identifiant du mail",
+            "de": "Nachrichten-ID",
+            "es": "ID del correo"
+          }
+        },
+        {
+          "key": "thread_id",
+          "type": "string",
+          "label": {
+            "en": "Conversation ID",
+            "fr": "Identifiant de la conversation",
+            "de": "Konversations-ID",
+            "es": "ID de la conversación"
+          }
+        },
+        {
+          "key": "inbox_unread",
+          "type": "number",
+          "label": {
+            "en": "Unread mails in the inbox",
+            "fr": "Mails non lus dans la boîte",
+            "de": "Ungelesene E-Mails im Posteingang",
+            "es": "Correos sin leer en la bandeja"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "send_email",
+      "label": {
+        "en": "Gmail: send a mail",
+        "fr": "Gmail : envoyer un mail",
+        "de": "Gmail: E-Mail senden",
+        "es": "Gmail: enviar un correo"
+      },
+      "description": {
+        "en": "Sends a mail from the connected Gmail account.",
+        "fr": "Envoie un mail depuis le compte Gmail connecté.",
+        "de": "Sendet eine E-Mail vom verbundenen Gmail-Konto.",
+        "es": "Envía un correo desde la cuenta de Gmail conectada."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "to",
+          "type": "string",
+          "label": {
+            "en": "To",
+            "fr": "À",
+            "de": "An",
+            "es": "Para"
+          },
+          "description": {
+            "en": "One or more addresses, separated by commas.",
+            "fr": "Une ou plusieurs adresses, séparées par des virgules.",
+            "de": "Eine oder mehrere Adressen, durch Kommas getrennt.",
+            "es": "Una o varias direcciones, separadas por comas."
+          },
+          "required": true
+        },
+        {
+          "key": "cc",
+          "type": "string",
+          "label": {
+            "en": "Cc",
+            "fr": "Cc",
+            "de": "Cc",
+            "es": "Cc"
+          },
+          "required": false
+        },
+        {
+          "key": "bcc",
+          "type": "string",
+          "label": {
+            "en": "Bcc",
+            "fr": "Cci",
+            "de": "Bcc",
+            "es": "Cco"
+          },
+          "required": false
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Objet",
+            "de": "Betreff",
+            "es": "Asunto"
+          },
+          "description": {
+            "en": "Scene variables are allowed.",
+            "fr": "Les variables de scène sont acceptées.",
+            "de": "Szenenvariablen sind erlaubt.",
+            "es": "Se admiten variables de escena."
+          },
+          "required": true
+        },
+        {
+          "key": "body",
+          "type": "string",
+          "label": {
+            "en": "Message",
+            "fr": "Message",
+            "de": "Nachricht",
+            "es": "Mensaje"
+          },
+          "required": true
+        },
+        {
+          "key": "format",
+          "type": "select",
+          "label": {
+            "en": "Format",
+            "fr": "Format",
+            "de": "Format",
+            "es": "Formato"
+          },
+          "options": [
+            {
+              "value": "text",
+              "label": {
+                "en": "Plain text",
+                "fr": "Texte brut",
+                "de": "Nur Text",
+                "es": "Texto sin formato"
+              }
+            },
+            {
+              "value": "html",
+              "label": {
+                "en": "Simple HTML",
+                "fr": "HTML simple",
+                "de": "Einfaches HTML",
+                "es": "HTML sencillo"
+              }
+            }
+          ],
+          "default": "text",
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "key": "message_id",
+          "type": "string",
+          "label": {
+            "en": "Message ID",
+            "fr": "Identifiant du mail",
+            "de": "Nachrichten-ID",
+            "es": "ID del correo"
+          }
+        },
+        {
+          "key": "thread_id",
+          "type": "string",
+          "label": {
+            "en": "Conversation ID",
+            "fr": "Identifiant de la conversation",
+            "de": "Konversations-ID",
+            "es": "ID de la conversación"
+          }
+        }
+      ]
+    },
+    {
+      "key": "enable_vacation",
+      "label": {
+        "en": "Gmail: turn the vacation responder on",
+        "fr": "Gmail : activer la réponse d’absence",
+        "de": "Gmail: Abwesenheitsnotiz einschalten",
+        "es": "Gmail: activar la respuesta automática"
+      },
+      "description": {
+        "en": "Gmail replies automatically to the mails received, between optional dates.",
+        "fr": "Gmail répond automatiquement aux mails reçus, entre des dates facultatives.",
+        "de": "Gmail beantwortet empfangene E-Mails automatisch, optional zwischen zwei Daten.",
+        "es": "Gmail responde automáticamente a los correos recibidos, entre fechas opcionales."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Objet",
+            "de": "Betreff",
+            "es": "Asunto"
+          },
+          "required": false
+        },
+        {
+          "key": "message",
+          "type": "string",
+          "label": {
+            "en": "Message",
+            "fr": "Message",
+            "de": "Nachricht",
+            "es": "Mensaje"
+          },
+          "required": true
+        },
+        {
+          "key": "start",
+          "type": "string",
+          "label": {
+            "en": "From",
+            "fr": "Du",
+            "de": "Ab",
+            "es": "Desde"
+          },
+          "description": {
+            "en": "Empty = now. YYYY-MM-DD, DD/MM/YYYY (with an optional time HH:MM) or +3 (days), in the time zone of Gladys.",
+            "fr": "Vide = maintenant. AAAA-MM-JJ, JJ/MM/AAAA (heure HH:MM facultative) ou +3 (jours), dans le fuseau de Gladys.",
+            "de": "Leer = jetzt. JJJJ-MM-TT, TT/MM/JJJJ (Uhrzeit HH:MM optional) oder +3 (Tage), in der Zeitzone von Gladys.",
+            "es": "Vacío = ahora. AAAA-MM-DD, DD/MM/AAAA (hora HH:MM opcional) o +3 (días), en la zona horaria de Gladys."
+          },
+          "required": false
+        },
+        {
+          "key": "end",
+          "type": "string",
+          "label": {
+            "en": "Until",
+            "fr": "Jusqu’au",
+            "de": "Bis",
+            "es": "Hasta"
+          },
+          "description": {
+            "en": "Empty = until turned off. A date without time ends at 23:59.",
+            "fr": "Vide = jusqu’à désactivation. Une date sans heure finit à 23 h 59.",
+            "de": "Leer = bis zum Ausschalten. Ein Datum ohne Uhrzeit endet um 23:59.",
+            "es": "Vacío = hasta desactivarla. Una fecha sin hora termina a las 23:59."
+          },
+          "required": false
+        },
+        {
+          "key": "contacts_only",
+          "type": "boolean",
+          "label": {
+            "en": "Only reply to my contacts",
+            "fr": "Ne répondre qu’à mes contacts",
+            "de": "Nur meinen Kontakten antworten",
+            "es": "Responder solo a mis contactos"
+          },
+          "default": false,
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "key": "start",
+          "type": "string",
+          "label": {
+            "en": "Start (ISO 8601)",
+            "fr": "Début (ISO 8601)",
+            "de": "Beginn (ISO 8601)",
+            "es": "Inicio (ISO 8601)"
+          }
+        },
+        {
+          "key": "end",
+          "type": "string",
+          "label": {
+            "en": "End (ISO 8601)",
+            "fr": "Fin (ISO 8601)",
+            "de": "Ende (ISO 8601)",
+            "es": "Fin (ISO 8601)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "disable_vacation",
+      "label": {
+        "en": "Gmail: turn the vacation responder off",
+        "fr": "Gmail : désactiver la réponse d’absence",
+        "de": "Gmail: Abwesenheitsnotiz ausschalten",
+        "es": "Gmail: desactivar la respuesta automática"
+      },
+      "description": {
+        "en": "Stops the automatic replies (the subject and message are kept).",
+        "fr": "Arrête les réponses automatiques (l’objet et le message sont conservés).",
+        "de": "Beendet die automatischen Antworten (Betreff und Nachricht bleiben erhalten).",
+        "es": "Detiene las respuestas automáticas (se conservan el asunto y el mensaje)."
+      },
+      "timeout_seconds": 30
+    },
+    {
+      "key": "get_unread",
+      "label": {
+        "en": "Gmail: read the unread mails",
+        "fr": "Gmail : lire les mails non lus",
+        "de": "Gmail: ungelesene E-Mails lesen",
+        "es": "Gmail: leer los correos sin leer"
+      },
+      "description": {
+        "en": "The number of unread mails of the inbox or of a label, and the newest one, for a message or a condition.",
+        "fr": "Le nombre de mails non lus de la boîte de réception ou d’un libellé, et le plus récent, pour un message ou une condition.",
+        "de": "Die Anzahl ungelesener E-Mails im Posteingang oder in einem Label und die neueste, für eine Nachricht oder Bedingung.",
+        "es": "El número de correos sin leer de la bandeja de entrada o de una etiqueta, y el más reciente, para un mensaje o una condición."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "label",
+          "type": "string",
+          "label": {
+            "en": "Gmail label",
+            "fr": "Libellé Gmail",
+            "de": "Gmail-Label",
+            "es": "Etiqueta de Gmail"
+          },
+          "description": {
+            "en": "Its name as shown in Gmail. Leave empty for the inbox.",
+            "fr": "Son nom tel qu’affiché dans Gmail. Laissez vide pour la boîte de réception.",
+            "de": "Sein Name wie in Gmail. Leer lassen für den Posteingang.",
+            "es": "Su nombre tal como aparece en Gmail. Déjalo vacío para la bandeja de entrada."
+          },
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "key": "count",
+          "type": "number",
+          "label": {
+            "en": "Unread mails",
+            "fr": "Mails non lus",
+            "de": "Ungelesene E-Mails",
+            "es": "Correos sin leer"
+          }
+        },
+        {
+          "key": "latest_from",
+          "type": "string",
+          "label": {
+            "en": "Sender of the newest",
+            "fr": "Expéditeur du plus récent",
+            "de": "Absender der neuesten",
+            "es": "Remitente del más reciente"
+          }
+        },
+        {
+          "key": "latest_subject",
+          "type": "string",
+          "label": {
+            "en": "Subject of the newest",
+            "fr": "Objet du plus récent",
+            "de": "Betreff der neuesten",
+            "es": "Asunto del más reciente"
+          }
+        },
+        {
+          "key": "latest_message_id",
+          "type": "string",
+          "label": {
+            "en": "ID of the newest",
+            "fr": "Identifiant du plus récent",
+            "de": "ID der neuesten",
+            "es": "ID del más reciente"
+          }
+        }
+      ]
+    },
+    {
+      "key": "modify_message",
+      "label": {
+        "en": "Gmail: mark as read, label, archive",
+        "fr": "Gmail : marquer lu, libeller, archiver",
+        "de": "Gmail: gelesen, Label, archivieren",
+        "es": "Gmail: marcar leído, etiquetar, archivar"
+      },
+      "description": {
+        "en": "Changes a mail, usually the one of the trigger. Needs the \"Read and organize\" access.",
+        "fr": "Modifie un mail, en général celui du déclencheur. Demande l’accès « Lire et organiser ».",
+        "de": "Ändert eine E-Mail, meist die des Auslösers. Erfordert den Zugriff „Lesen und organisieren“.",
+        "es": "Modifica un correo, normalmente el del activador. Requiere el acceso «Leer y organizar»."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "message_id",
+          "type": "string",
+          "label": {
+            "en": "Message ID",
+            "fr": "Identifiant du mail",
+            "de": "Nachrichten-ID",
+            "es": "ID del correo"
+          },
+          "description": {
+            "en": "The \"Message ID\" variable of the \"new mail\" trigger.",
+            "fr": "La variable « Identifiant du mail » du déclencheur « nouveau mail ».",
+            "de": "Die Variable „Nachrichten-ID“ des Auslösers „neue E-Mail“.",
+            "es": "La variable «ID del correo» del activador «correo nuevo»."
+          },
+          "required": true
+        },
+        {
+          "key": "mark_read",
+          "type": "boolean",
+          "label": {
+            "en": "Mark as read",
+            "fr": "Marquer comme lu",
+            "de": "Als gelesen markieren",
+            "es": "Marcar como leído"
+          },
+          "default": true,
+          "required": false
+        },
+        {
+          "key": "add_label",
+          "type": "string",
+          "label": {
+            "en": "Add the label",
+            "fr": "Ajouter le libellé",
+            "de": "Label hinzufügen",
+            "es": "Añadir la etiqueta"
+          },
+          "description": {
+            "en": "An existing label, its name as in Gmail. Optional.",
+            "fr": "Un libellé existant, son nom comme dans Gmail. Facultatif.",
+            "de": "Ein vorhandenes Label, sein Name wie in Gmail. Optional.",
+            "es": "Una etiqueta existente, su nombre como en Gmail. Opcional."
+          },
+          "required": false
+        },
+        {
+          "key": "archive",
+          "type": "boolean",
+          "label": {
+            "en": "Archive (remove from the inbox)",
+            "fr": "Archiver (retirer de la boîte)",
+            "de": "Archivieren (aus dem Posteingang)",
+            "es": "Archivar (quitar de la bandeja)"
+          },
+          "default": false,
+          "required": false
+        }
+      ]
+    }
+  ]
+}

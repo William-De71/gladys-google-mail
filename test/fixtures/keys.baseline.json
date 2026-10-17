@@ -1,0 +1,203 @@
+{
+  "manifest": {
+    "config_schema": [
+      {
+        "key": "intro",
+        "type": "section"
+      },
+      {
+        "key": "client_id",
+        "type": "string"
+      },
+      {
+        "key": "client_secret",
+        "type": "secret"
+      },
+      {
+        "key": "access",
+        "type": "select"
+      },
+      {
+        "key": "connect_intro",
+        "type": "section"
+      },
+      {
+        "key": "google_account",
+        "type": "oauth2"
+      },
+      {
+        "key": "options_intro",
+        "type": "section"
+      },
+      {
+        "key": "poll_minutes",
+        "type": "number"
+      },
+      {
+        "key": "notification_subject",
+        "type": "string"
+      }
+    ],
+    "contact_schema": [
+      {
+        "key": "intro",
+        "type": "section"
+      },
+      {
+        "key": "email",
+        "type": "string"
+      }
+    ],
+    "actions": ["test_connection", "diagnostic", "disconnect"],
+    "scene_triggers": [
+      {
+        "key": "new_email",
+        "fields": [
+          {
+            "key": "from_address",
+            "options": []
+          },
+          {
+            "key": "label",
+            "options": []
+          },
+          {
+            "key": "category",
+            "options": ["primary", "social", "promotions", "updates", "forums"]
+          }
+        ],
+        "variables": [
+          {
+            "key": "from_name",
+            "type": "string"
+          },
+          {
+            "key": "from_address",
+            "type": "string"
+          },
+          {
+            "key": "from",
+            "type": "string"
+          },
+          {
+            "key": "to",
+            "type": "string"
+          },
+          {
+            "key": "subject",
+            "type": "string"
+          },
+          {
+            "key": "snippet",
+            "type": "string"
+          },
+          {
+            "key": "label",
+            "type": "string"
+          },
+          {
+            "key": "labels",
+            "type": "string"
+          },
+          {
+            "key": "category",
+            "type": "string"
+          },
+          {
+            "key": "important",
+            "type": "boolean"
+          },
+          {
+            "key": "date",
+            "type": "string"
+          },
+          {
+            "key": "message_id",
+            "type": "string"
+          },
+          {
+            "key": "thread_id",
+            "type": "string"
+          },
+          {
+            "key": "inbox_unread",
+            "type": "number"
+          }
+        ]
+      }
+    ],
+    "scene_actions": [
+      {
+        "key": "send_email",
+        "fields": ["to", "cc", "bcc", "subject", "body", "format"],
+        "outputs": [
+          {
+            "key": "message_id",
+            "type": "string"
+          },
+          {
+            "key": "thread_id",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "enable_vacation",
+        "fields": ["subject", "message", "start", "end", "contacts_only"],
+        "outputs": [
+          {
+            "key": "start",
+            "type": "string"
+          },
+          {
+            "key": "end",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "disable_vacation",
+        "fields": [],
+        "outputs": []
+      },
+      {
+        "key": "get_unread",
+        "fields": ["label"],
+        "outputs": [
+          {
+            "key": "count",
+            "type": "number"
+          },
+          {
+            "key": "latest_from",
+            "type": "string"
+          },
+          {
+            "key": "latest_subject",
+            "type": "string"
+          },
+          {
+            "key": "latest_message_id",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "key": "modify_message",
+        "fields": ["message_id", "mark_read", "add_label", "archive"],
+        "outputs": []
+      }
+    ],
+    "widgets": [
+      {
+        "key": "unread",
+        "settings": ["label"]
+      },
+      {
+        "key": "vacation",
+        "settings": []
+      }
+    ],
+    "widget_actions": ["refresh", "mark_read", "vacation_on", "vacation_off"]
+  }
+}
