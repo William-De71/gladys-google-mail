@@ -5,7 +5,7 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 follow [Semantic Versioning](https://semver.org/). This file is generated at
 each release from the Conventional Commits: do not edit it by hand.
 
-## [0.1.0] - unreleased
+## [0.1.0] - 2026-10-17
 
 ### Added
 
@@ -17,3 +17,5 @@ each release from the Conventional Commits: do not edit it by hand.
 - Dashboard widgets: unread mails of the inbox or a label (count, newest mails, link to Gmail, "Mark as read") and the vacation responder (state, dates, "Turn on" form, "Turn off"), Gladys 5.2.0 or later.
 - Configuration actions: test the connection (account, granted permissions, quota used today), diagnostic (an anonymized summary in the logs), disconnect (the access is revoked at Google).
 - English, French, German and Spanish everywhere: settings, widgets, scenes and documentation.
+
+[0.1.0]: https://github.com/William-De71/gladys-google-mail/releases/tag/v0.1.0
