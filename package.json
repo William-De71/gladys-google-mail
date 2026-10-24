@@ -1,6 +1,6 @@
 {
   "name": "gladys-google-mail",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "External Gladys Assistant integration for Gmail: notifications by email, vacation responder, new mail scene trigger, scene actions and dashboard widgets, through the official Gmail API.",
   "homepage": "https://github.com/William-De71/gladys-google-mail",

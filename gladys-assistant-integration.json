@@ -8,8 +8,8 @@
     "de": "Gmail in Gladys: Benachrichtigungen per E-Mail, Abwesenheitsnotiz, Szenen, Widgets.",
     "es": "Gmail en Gladys: notificaciones por correo, respuesta automática, escenas, widgets."
   },
-  "version": "0.1.0",
-  "docker_image": "ghcr.io/william-de71/gladys-google-mail:0.1.0",
+  "version": "0.1.1",
+  "docker_image": "ghcr.io/william-de71/gladys-google-mail:0.1.1",
   "gladys_version": ">=5.2.0",
   "categories": ["notifications", "services"],
   "cover_image": "https://raw.githubusercontent.com/William-De71/gladys-google-mail/main/cover.jpg",
