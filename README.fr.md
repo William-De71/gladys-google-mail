@@ -5,7 +5,7 @@
 [![Licence : Apache-2.0](https://img.shields.io/badge/licence-Apache--2.0-blue.svg)](LICENSE)
 [![Dernière version](https://img.shields.io/github/v/release/William-De71/gladys-google-mail?sort=semver)](https://github.com/William-De71/gladys-google-mail/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/William-De71/gladys-google-mail/release.yml?branch=main&label=CI)](https://github.com/William-De71/gladys-google-mail/actions/workflows/release.yml)
-[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.2.0-2f6fb5)](https://gladysassistant.com)
+[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.3.0-2f6fb5)](https://gladysassistant.com)
 
 ![Google Mail pour Gladys Assistant](cover.jpg)
 
@@ -91,7 +91,7 @@ Non implémenté : brouillons, pièces jointes depuis une scène, suppression, r
 
 ## Prérequis
 
-- Gladys **5.2.0** ou plus récent (les versions antérieures ne peuvent pas installer l’intégration : formulaires des widgets, widgets et scènes).
+- Gladys **5.3.0** ou plus récent (les versions antérieures ne peuvent pas installer l’intégration : formulaires des widgets, widgets et scènes, mots-clés du catalogue de Gladys 5.3).
 - Un compte Gmail.
 - Un projet Google Cloud gratuit avec l’API Gmail activée, un écran de consentement **En production** et un client OAuth de type **Application Web** dont l’URI de redirection est `https://my.gladysassistant.com/redirect/oauth` (pas à pas dans la [documentation](docs/fr.md#configuration)).
 

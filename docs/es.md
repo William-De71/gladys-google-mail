@@ -17,7 +17,7 @@ Esta integración conecta una cuenta de **Gmail** con Gladys mediante la **API o
 
 ## Requisitos
 
-- Gladys **5.2.0** o posterior (formularios de los widgets).
+- Gladys **5.3.0** o posterior (formularios de los widgets).
 - Una cuenta de Gmail (personal, o de Google Workspace si el administrador permite aplicaciones de terceros).
 - Un **proyecto de Google Cloud** gratuito en el que creas **tu propio cliente OAuth**: Google no permite compartir una clave y la integración no incluye ninguna. Unos diez minutos, una sola vez.
 

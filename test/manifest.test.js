@@ -36,14 +36,14 @@ test('a send-only communication integration, in lockstep with package.json, at 0
   assert.equal(pkg.name, 'gladys-google-mail');
 });
 
-test('cloud transport only, no permission, Gladys 5.2.0 for the widget forms', () => {
+test('cloud transport only, no permission, Gladys 5.3.0 for the catalog keywords', () => {
   assert.deepEqual(manifest.transports, ['cloud']);
   assert.doesNotMatch(source('../src/app.js'), /GLADYS_PREFER_LOCAL|publishTransports/);
   for (const key of ['location', 'network_wake', 'containers', 'network_discovery', 'webhooks']) {
     assert.equal(manifest[key], undefined, key);
   }
   assert.match(source('../src/widgets.js'), /fields:/, 'button forms: Gladys 5.2.0');
-  assert.equal(manifest.gladys_version, '>=5.2.0');
+  assert.equal(manifest.gladys_version, '>=5.3.0');
 });
 
 test('declares exactly the scene triggers, actions and widgets the code handles', () => {
@@ -165,4 +165,14 @@ test('no Google host other than the documented ones in the code', () => {
     // the scopes are URLs
     'www.googleapis.com',
   ]);
+});
+
+test('catalog keywords and countries of Gladys 5.3.0', () => {
+  assert.equal(manifest.gladys_version, '>=5.3.0');
+  const keywords = manifest.keywords.map((keyword) => keyword.trim().toLowerCase());
+  assert.ok(keywords.length >= 1 && keywords.length <= 10, 'one to ten keywords');
+  keywords.forEach((keyword) => assert.ok(keyword.length >= 2 && keyword.length <= 30, keyword));
+  assert.equal(new Set(keywords).size, keywords.length, 'unique once trimmed and lowercased');
+  // Usable everywhere: no `countries`, the catalog shows it in every country.
+  assert.equal(manifest.countries, undefined);
 });

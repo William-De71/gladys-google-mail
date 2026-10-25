@@ -17,7 +17,7 @@ This integration links a **Gmail** account to Gladys through the **official Gmai
 
 ## Requirements
 
-- Gladys **5.2.0** or later (widget forms).
+- Gladys **5.3.0** or later (widget forms).
 - A Gmail account (personal, or Google Workspace when the administrator allows third-party apps).
 - A free **Google Cloud project** in which you create **your own OAuth client**: Google does not allow sharing a key, and the integration ships none. About ten minutes, once.
 

@@ -17,7 +17,7 @@ Diese Integration verbindet ein **Gmail**-Konto über die **offizielle Gmail API
 
 ## Voraussetzungen
 
-- Gladys **5.2.0** oder neuer (Widget-Formulare).
+- Gladys **5.3.0** oder neuer (Widget-Formulare).
 - Ein Gmail-Konto (privat oder Google Workspace, wenn der Administrator Drittanbieter-Apps erlaubt).
 - Ein kostenloses **Google-Cloud-Projekt**, in dem du **deinen eigenen OAuth-Client** erstellst: Google erlaubt kein Teilen eines Schlüssels, und die Integration enthält keinen. Etwa zehn Minuten, einmalig.
 

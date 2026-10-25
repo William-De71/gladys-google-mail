@@ -5,7 +5,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Latest release](https://img.shields.io/github/v/release/William-De71/gladys-google-mail?sort=semver)](https://github.com/William-De71/gladys-google-mail/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/William-De71/gladys-google-mail/release.yml?branch=main&label=CI)](https://github.com/William-De71/gladys-google-mail/actions/workflows/release.yml)
-[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.2.0-2f6fb5)](https://gladysassistant.com)
+[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.3.0-2f6fb5)](https://gladysassistant.com)
 
 ![Google Mail for Gladys Assistant](cover.jpg)
 
@@ -91,7 +91,7 @@ Not implemented: drafts, attachments from a scene, deletion, receiving messages 
 
 ## Requirements
 
-- Gladys **5.2.0** or later (older releases cannot install the integration: widget forms, widgets and scenes).
+- Gladys **5.3.0** or later (older releases cannot install the integration: widget forms, widgets and scenes, catalog keywords of Gladys 5.3).
 - A Gmail account.
 - A free Google Cloud project with the Gmail API enabled, a consent screen **In production** and an OAuth client of type **Web application** whose redirect URI is `https://my.gladysassistant.com/redirect/oauth` (step by step in the [documentation](docs/en.md#configuration)).
 
